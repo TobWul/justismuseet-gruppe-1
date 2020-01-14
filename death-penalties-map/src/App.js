@@ -1,4 +1,5 @@
 import React from 'react';
+import './styles/variables.scss';
 import './styles/global.scss';
 import Map from './components/Map';
 
