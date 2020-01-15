@@ -7,11 +7,6 @@ export default {
       name: "name",
       type: "string",
       title: "Fullt navn"
-    },
-    {
-      name: "age",
-      type: "number",
-      title: "Alder"
     }
   ]
 };
