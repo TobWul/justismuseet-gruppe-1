@@ -46,6 +46,11 @@ export default {
       name: "crime",
       type: "string",
       title: "Forbrytelse"
+    },
+    {
+      type: "blockContent",
+      name: "history",
+      title: "Historie"
     }
   ]
 };
