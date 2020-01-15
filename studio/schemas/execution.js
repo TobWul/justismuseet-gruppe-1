@@ -35,6 +35,17 @@ export default {
       type: "reference",
       to: [{ type: "executioner" }],
       title: "Bøddel eller skarpretter"
+    },
+    {
+      name:"method",
+      type: "reference",
+      to: [{ type: "method" }],
+      title: "Henrettelsesmetode"
+    },
+    {
+      name: "crime",
+      type: "string",
+      title: "Forbrytelse"
     }
   ]
 };
