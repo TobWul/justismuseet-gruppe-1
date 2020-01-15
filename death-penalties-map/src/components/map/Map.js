@@ -31,29 +31,34 @@ const Map = () => {
 
   const onPointClick = event => {
     const feature = event.features[0];
-    const clusterId = feature.properties.cluster_id;
+    const clusterId = feature && feature.properties.cluster_id;
 
-    const mapboxSource = this._sourceRef.current.getSource();
+    const mapboxSource = sourceRef.current.getSource();
 
-    mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
-      if (err) {
-        return;
-      }
+    feature &&
+      mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) {
+          return;
+        }
 
-      onViewportChange({
-        ...viewport,
-        longitude: feature.geometry.coordinates[0],
-        latitude: feature.geometry.coordinates[1],
-        zoom,
-        transitionDuration: 500
+        onViewportChange({
+          ...viewport,
+          longitude: feature.geometry.coordinates[0],
+          latitude: feature.geometry.coordinates[1],
+          zoom,
+          transitionDuration: 500
+        });
       });
-    });
   };
 
   useEffect(() => {
-    sanity.fetch(query).then(data => {
-      setPointData(preparePointData(data));
-    });
+    // Fetching data from Sanity
+    sanity
+      .fetch(query)
+      .then(data => {
+        setPointData(preparePointData(data));
+      })
+      .catch(e => console.log(e));
   }, []);
 
   return (
