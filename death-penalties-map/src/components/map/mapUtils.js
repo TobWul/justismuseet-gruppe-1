@@ -1,12 +1,14 @@
 export const preparePointData = data => {
-  const points = data.map(feature => ({
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [feature.location.lng, feature.location.lat]
-    },
-    properties: { species: feature.name }
-  }));
+  const points = data
+    .filter(feature => feature.location)
+    .map(feature => ({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [feature.location.lng, feature.location.lat]
+      },
+      properties: { species: feature.name }
+    }));
 
   return {
     features: points,
