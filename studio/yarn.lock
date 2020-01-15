@@ -1134,8 +1134,8 @@
   resolved "https://registry.npmjs.org/@sanity/generate-help-url/-/generate-help-url-0.147.0.tgz#720b55ea736dfdc65006ca225eceb8fe79537fdf"
 
 "@sanity/google-maps-input@^0.147.6":
-  version "0.147.6"
-  resolved "https://registry.npmjs.org/@sanity/google-maps-input/-/google-maps-input-0.147.6.tgz#a4eddcbf56624d332b64f1e6071d062dcae289be"
+  version "0.147.9"
+  resolved "https://registry.npmjs.org/@sanity/google-maps-input/-/google-maps-input-0.147.9.tgz#91f27b266f4fa038adcbdca42c9295cbf0a31f3a"
 
 "@sanity/image-url@0.140.15":
   version "0.140.15"
