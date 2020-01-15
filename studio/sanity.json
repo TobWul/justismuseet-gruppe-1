@@ -14,7 +14,8 @@
     "@sanity/default-login",
     "@sanity/desk-tool",
     "@sanity/google-maps-input",
-    "mapbox-input"
+    "mapbox-input",
+    "@sanity/vision"
   ],
   "env": {
     "development": {
