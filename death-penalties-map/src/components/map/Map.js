@@ -11,6 +11,7 @@ import {
   unclusteredPointLayer
 } from './layers';
 import TextComponent from './textComponent/TextComponent';
+import { MapContextConsumer } from '../mapContext';
 
 const MAPBOX_TOKEN =
   'pk.eyJ1IjoidG9iaWFzd3VsdmlrIiwiYSI6ImNqeHd1NG5jcjA0MGQzcG56MTc5dTN6cHQifQ.9Oejzg6ki693vbomStWxVg'; // Set your mapbox token here
@@ -37,7 +38,7 @@ const Map = () => {
 
   const onViewportChange = viewport => setViewport(viewport);
 
-  const onPointClick = event => {
+  const onPointClick = (event, fetchData, closePopup) => {
     const feature = event.features[0];
     const clusterId = feature && feature.properties.cluster_id;
     const selectedPoints = map.current.queryRenderedFeatures(event.point);
@@ -61,8 +62,10 @@ const Map = () => {
       });
 
     if (selectedPoints.some(el => el.properties.id)) {
-      setId(selectedPoints.filter(el => el.properties.id)[0].properties.id);
+      fetchData(selectedPoints.filter(el => el.properties.id)[0].properties.id);
       // popup.fetchExecutionData(id);
+    } else {
+      closePopup();
     }
   };
 
@@ -77,33 +80,37 @@ const Map = () => {
   }, []);
 
   return (
-    <>
-      <TextComponent id={id} />
-      <MapGL
-        {...viewport}
-        width="100vw"
-        height="100vh"
-        mapStyle="mapbox://styles/tobiaswulvik/ck5f6pi0r0np41ht5pyof68o6"
-        onViewportChange={onViewportChange}
-        mapboxApiAccessToken={MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id]}
-        onClick={onPointClick}
-        ref={map}
-      >
-        <Source
-          type="geojson"
-          data={pointData}
-          cluster={true}
-          clusterMaxZoom={14}
-          clusterRadius={50}
-          ref={sourceRef}
-        >
-          <Layer {...clusterLayer} />
-          <Layer {...clusterCountLayer} />
-          <Layer {...unclusteredPointLayer} />
-        </Source>
-      </MapGL>
-    </>
+    <MapContextConsumer>
+      {context => {
+        const { fetchExecutionData, closePopup } = context;
+        return (
+          <MapGL
+            {...viewport}
+            width="100vw"
+            height="100vh"
+            mapStyle="mapbox://styles/tobiaswulvik/ck5f6pi0r0np41ht5pyof68o6"
+            onViewportChange={onViewportChange}
+            mapboxApiAccessToken={MAPBOX_TOKEN}
+            interactiveLayerIds={[clusterLayer.id]}
+            onClick={e => onPointClick(e, fetchExecutionData, closePopup)}
+            ref={map}
+          >
+            <Source
+              type="geojson"
+              data={pointData}
+              cluster={true}
+              clusterMaxZoom={14}
+              clusterRadius={50}
+              ref={sourceRef}
+            >
+              <Layer {...clusterLayer} />
+              <Layer {...clusterCountLayer} />
+              <Layer {...unclusteredPointLayer} />
+            </Source>
+          </MapGL>
+        );
+      }}
+    </MapContextConsumer>
   );
 };
 

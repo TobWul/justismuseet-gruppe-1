@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import imageUrlBuilder from '@sanity/image-url';
 import sanity from '../../lib/sanity';
+import style from './Image.module.scss';
 
 const builder = imageUrlBuilder(sanity);
 
-function Figure({ node }) {
+function Image({ node }) {
   const { alt, asset } = node;
   if (!asset) {
     return undefined;
@@ -18,11 +19,12 @@ function Figure({ node }) {
         .width(2000)
         .url()}
       alt={alt}
+      className={style.image}
     />
   );
 }
 
-Figure.propTypes = {
+Image.propTypes = {
   node: PropTypes.shape({
     alt: PropTypes.string,
     caption: PropTypes.string,
@@ -31,4 +33,4 @@ Figure.propTypes = {
     })
   })
 };
-export default Figure;
+export default Image;
