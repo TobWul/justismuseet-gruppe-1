@@ -3,75 +3,58 @@ import style from './TextComponent.module.scss';
 import sanity from '../../../lib/sanity';
 import BlockContent from '@sanity/block-content-to-react';
 import serializers from '../../serializers';
+import { MapContextConsumer } from '../../mapContext';
+import { cn } from '../../../lib/helpers';
 
 const TextComponent = ({ id }) => {
-  const [executionData, setExecutionData] = useState(null);
+  const [executionData, setExecutionData] = useState({});
   const [showPopup, setShowPopup] = useState(false);
 
-  const fetchExecutionData = id => {
-    const query = `*[_id == "${id}"]{
-            history,
-            county,
-            _updatedAt,
-            prisoner,
-            crime,
-            date,
-            executioner->{name, _id},
-            method->{name},
-            name,
-          }`;
-    sanity
-      .fetch(query)
-      .then(response => {
-        setExecutionData(response[0] !== null ? response[0] : null);
-        executionData ? setShowPopup(true) : setShowPopup(false);
-        console.log(executionData);
-      })
-      .catch(e => console.log(e));
-  };
-
-  useEffect(() => {
-    fetchExecutionData(id);
-  }, [id]);
-  //   const hasHistory = his => {
-  //     return his == '';
-  //   };
-  //   let text;
-  //   let img;
-  //   const getText = his => {
-  //     text =
-  //       data.history.children.text == ''
-  //         ? 'Ukjent historie'
-  //         : data.history.children.text;
-  //     img = data.history.asset._ref == '' ? '' : data.history.asset._ref;
-  //   };
-  return showPopup ? (
-    <div className={style.popup}>
-      <header>
-        <p id="placement">
-          {executionData.name}
-          {executionData.county}
-        </p>
-        <h1 id="name">
-          {executionData.prisoner && executionData.prisoner.name}
-        </h1>
-        <p>
-          Skarpetter:{' '}
-          {executionData.executioner && executionData.executioner.name}
-        </p>
-        <p>Forbrytelse: {executionData.crime}</p>
-      </header>
-      <div id="information">
-        {executionData.history && (
-          <BlockContent
-            blocks={executionData.history}
-            serializers={serializers}
-          />
-        )}
-      </div>
-    </div>
-  ) : (
-    ''
+  return (
+    <MapContextConsumer>
+      {context => {
+        const { execution, isPopupOpen } = context;
+        return (
+          <div className={cn(style.popup, isPopupOpen ? style.show : '')}>
+            {execution && (
+              <>
+                <header>
+                  <p className={style.place}>
+                    {execution.name} i {execution.county} — {execution.date}
+                  </p>
+                  <h1 className={style.prisoner}>
+                    {execution.prisoner && execution.prisoner.name}
+                  </h1>
+                  <div className={style.info}>
+                    <p>
+                      <strong>Skarpetter:</strong>{' '}
+                      {execution.executioner
+                        ? execution.executioner.name
+                        : 'Ukjent'}
+                    </p>
+                    <p>
+                      <strong>Forbrytelse:</strong> {execution.crime}
+                    </p>
+                  </div>
+                </header>
+                <div className={style.story}>
+                  {execution.history ? (
+                    <BlockContent
+                      blocks={execution.history}
+                      serializers={serializers}
+                    />
+                  ) : (
+                    <p>
+                      <em>Ukjent historie.</em>
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        );
+      }}
+    </MapContextConsumer>
   );
 };
 

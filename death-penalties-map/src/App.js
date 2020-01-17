@@ -5,9 +5,12 @@ import Map from './components/map/Map';
 import TextComponent from './components/map/textComponent/TextComponent';
 
 function App() {
-  return <div><Map />
-  <TextComponent/>
-  </div>;
+  return (
+    <div>
+      <TextComponent />
+      <Map />
+    </div>
+  );
 }
 
 export default App;

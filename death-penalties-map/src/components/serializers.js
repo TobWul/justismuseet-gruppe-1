@@ -1,10 +1,10 @@
 // Used in Sanity's BlockContent
 
-import Figure from './Figure/Figure';
+import Image from './Image/Image';
 
 const serializers = {
   types: {
-    image: Figure
+    image: Image
   }
 };
 
