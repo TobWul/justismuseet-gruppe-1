@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import MapGL, { Source, Layer } from 'react-map-gl';
+import MapGL, { Source, Layer, FlyToInterpolator } from 'react-map-gl';
 import sanity from '../../lib/sanity';
 import { preparePointData } from './mapUtils';
+import style from './Map.module.scss';
+import Popup from '../Popup';
 
 import {
   clusterLayer,
@@ -21,17 +23,44 @@ const Map = () => {
     pitch: 0
   });
   const [pointData, setPointData] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showManyPopup, setShowManyPopup] = useState(false);
+  const [executionData, setExecutionData] = useState({});
   const sourceRef = useRef(null);
+  const map = useRef(null);
 
-  const query = `*[_type == "execution"]{
-    location
+  const pointLocationQuery = `*[_type == "execution"]{
+    location,
+    _id
   }`;
 
   const onViewportChange = viewport => setViewport(viewport);
 
+  const fetchExecutionData = id => {
+    const query = `*[_id == "${id}"]{
+            history->,
+            county,
+            _updatedAt,
+            crime,
+            date,
+            executioner->{name, _id},
+            method->{name},
+            name,
+            prisoner->{name}
+          }`;
+    sanity
+      .fetch(query)
+      .then(response => {
+        console.log(response);
+        setExecutionData(response);
+      })
+      .catch(e => console.log(e));
+  };
+
   const onPointClick = event => {
     const feature = event.features[0];
     const clusterId = feature && feature.properties.cluster_id;
+    const selectedPoints = map.current.queryRenderedFeatures(event.point);
 
     const mapboxSource = sourceRef.current.getSource();
 
@@ -46,15 +75,22 @@ const Map = () => {
           longitude: feature.geometry.coordinates[0],
           latitude: feature.geometry.coordinates[1],
           zoom,
-          transitionDuration: 500
+          transitionDuration: 500,
+          transitionInterpolator: new FlyToInterpolator()
         });
       });
+
+    if (selectedPoints.some(el => el.properties.id)) {
+      const id = selectedPoints.filter(el => el.properties.id)[0].properties.id;
+      fetchExecutionData(id);
+      setShowPopup(true);
+    }
   };
 
   useEffect(() => {
     // Fetching data from Sanity
     sanity
-      .fetch(query)
+      .fetch(pointLocationQuery)
       .then(data => {
         setPointData(preparePointData(data));
       })
@@ -62,29 +98,33 @@ const Map = () => {
   }, []);
 
   return (
-    <MapGL
-      {...viewport}
-      width="100vw"
-      height="100vh"
-      mapStyle="mapbox://styles/tobiaswulvik/ck5ckdnwg0c1a1cnst608dhif"
-      onViewportChange={onViewportChange}
-      mapboxApiAccessToken={MAPBOX_TOKEN}
-      interactiveLayerIds={[clusterLayer.id]}
-      onClick={onPointClick}
-    >
-      <Source
-        type="geojson"
-        data={pointData}
-        cluster={true}
-        clusterMaxZoom={14}
-        clusterRadius={50}
-        ref={sourceRef}
+    <>
+      <Popup data={executionData} />
+      <MapGL
+        {...viewport}
+        width="100vw"
+        height="100vh"
+        mapStyle="mapbox://styles/tobiaswulvik/ck5f6pi0r0np41ht5pyof68o6"
+        onViewportChange={onViewportChange}
+        mapboxApiAccessToken={MAPBOX_TOKEN}
+        interactiveLayerIds={[clusterLayer.id]}
+        onClick={onPointClick}
+        ref={map}
       >
-        <Layer {...clusterLayer} />
-        <Layer {...clusterCountLayer} />
-        <Layer {...unclusteredPointLayer} />
-      </Source>
-    </MapGL>
+        <Source
+          type="geojson"
+          data={pointData}
+          cluster={true}
+          clusterMaxZoom={14}
+          clusterRadius={50}
+          ref={sourceRef}
+        >
+          <Layer {...clusterLayer} />
+          <Layer {...clusterCountLayer} />
+          <Layer {...unclusteredPointLayer} />
+        </Source>
+      </MapGL>
+    </>
   );
 };
 

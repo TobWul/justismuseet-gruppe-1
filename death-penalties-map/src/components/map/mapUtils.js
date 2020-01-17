@@ -7,7 +7,7 @@ export const preparePointData = data => {
         type: 'Point',
         coordinates: [feature.location.lng, feature.location.lat]
       },
-      properties: { species: feature.name }
+      properties: { id: feature._id }
     }));
 
   return {
