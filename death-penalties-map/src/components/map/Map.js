@@ -10,6 +10,7 @@ import {
   clusterCountLayer,
   unclusteredPointLayer
 } from './layers';
+import TextComponent from './textComponent/TextComponent';
 
 const MAPBOX_TOKEN =
   'pk.eyJ1IjoidG9iaWFzd3VsdmlrIiwiYSI6ImNqeHd1NG5jcjA0MGQzcG56MTc5dTN6cHQifQ.9Oejzg6ki693vbomStWxVg'; // Set your mapbox token here
@@ -23,11 +24,11 @@ const Map = () => {
     pitch: 0
   });
   const [pointData, setPointData] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
   const [showManyPopup, setShowManyPopup] = useState(false);
-  const [executionData, setExecutionData] = useState({});
+  const [id, setId] = useState(null);
   const sourceRef = useRef(null);
   const map = useRef(null);
+  const popup = useRef(null);
 
   const pointLocationQuery = `*[_type == "execution"]{
     location,
@@ -35,27 +36,6 @@ const Map = () => {
   }`;
 
   const onViewportChange = viewport => setViewport(viewport);
-
-  const fetchExecutionData = id => {
-    const query = `*[_id == "${id}"]{
-            history->,
-            county,
-            _updatedAt,
-            crime,
-            date,
-            executioner->{name, _id},
-            method->{name},
-            name,
-            prisoner->{name}
-          }`;
-    sanity
-      .fetch(query)
-      .then(response => {
-        console.log(response);
-        setExecutionData(response);
-      })
-      .catch(e => console.log(e));
-  };
 
   const onPointClick = event => {
     const feature = event.features[0];
@@ -81,9 +61,8 @@ const Map = () => {
       });
 
     if (selectedPoints.some(el => el.properties.id)) {
-      const id = selectedPoints.filter(el => el.properties.id)[0].properties.id;
-      fetchExecutionData(id);
-      setShowPopup(true);
+      setId(selectedPoints.filter(el => el.properties.id)[0].properties.id);
+      // popup.fetchExecutionData(id);
     }
   };
 
@@ -99,7 +78,7 @@ const Map = () => {
 
   return (
     <>
-      <Popup data={executionData} />
+      <TextComponent id={id} />
       <MapGL
         {...viewport}
         width="100vw"
