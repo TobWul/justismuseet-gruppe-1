@@ -4,7 +4,7 @@
   "version": "1.0.3",
   "scripts": {
     "build": "lerna run build --parallel",
-    "build-web": "(cd death-penalties-map && yarn build)",
+    "build-web": "(cd death-penalties-map && npm run build)",
     "build-studio": "(cd studio && npm run build)",
     "dev": "lerna run dev --parallel",
     "format": "lerna run format",
