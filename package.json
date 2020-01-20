@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "justismuseet",
+  "version": "1.0.3",
+  "scripts": {
+    "build": "lerna run build --parallel",
+    "build-web": "(cd death-penalties-map && yarn build)",
+    "build-studio": "(cd studio && npm run build)",
+    "dev": "lerna run dev --parallel",
+    "format": "lerna run format",
+    "graphql-deploy": "lerna run graphql-deploy",
+    "lint": "lerna run lint",
+    "postinstall": "lerna bootstrap",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "lerna": "^3.20.2"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1"
+  }
+}

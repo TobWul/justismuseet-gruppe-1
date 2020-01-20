@@ -16,7 +16,8 @@ function Image({ node }) {
       src={builder
         .image(asset)
         .auto('format')
-        .width(2000)
+        .width(1000)
+        .fit('clip')
         .url()}
       alt={alt}
       className={style.image}
