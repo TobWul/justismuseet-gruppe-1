@@ -1,4 +1,4 @@
-const markerColor = '#E5A68A';
+const markerColor = '#A80E33';
 
 export const clusterLayer = {
   id: 'clusters',
@@ -26,6 +26,9 @@ export const clusterCountLayer = {
     'text-field': '{point_count_abbreviated}',
     'text-font': ['EB Garamond SemiBold', 'Arial Unicode MS Bold'],
     'text-size': 18
+  },
+  paint: {
+    'text-color': '#ffffff'
   }
 };
 
